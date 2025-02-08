@@ -493,6 +493,7 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 const coverableLines = lines.map(line => Number(line['$'].number));
                 complexity = complexity + Number(summary.maxCyclomaticComplexity);
                 if (file) {
+                    console.log(file.name);
                     const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
                     const changedLines = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                     file.linesTotal += Number(summary.numSequencePoints);
