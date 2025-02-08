@@ -136,7 +136,7 @@ const formatCoverageModule = (module) => {
         `${file.branchCoverage}%`,
         `${file.complexity}`,
         `${file.changedLinesCovered} / ${file.changedLinesTotal}`,
-        `${file.changedLineCoverage}`,
+        `${file.changedLineCoverage}%`,
         formatLinesToCover(file.linesToCover)
     ]));
     return formatDetails(summary, table);
@@ -491,14 +491,12 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 const file = files.find(f => f.id === m.FileRef[0]['$'].uid);
                 const summary = m.Summary[0]['$'];
                 const lines = ((_a = m.SequencePoints[0].SequencePoint) !== null && _a !== void 0 ? _a : []);
-                const coverableLines = lines.map(line => Number(line['$'].number));
+                const coverableLines = lines.map(line => Number(line['$'].sl));
                 complexity = complexity + Number(summary.maxCyclomaticComplexity);
                 if (file) {
                     const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
-                    console.log(JSON.stringify(changedFile));
                     const changedLineNumbers = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
-                    const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].number)));
-                    console.log(JSON.stringify(changedLines));
+                    const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].sl)));
                     file.linesTotal += Number(summary.numSequencePoints);
                     file.linesCovered += Number(summary.visitedSequencePoints);
                     file.branchesTotal += Number(summary.numBranchPoints);

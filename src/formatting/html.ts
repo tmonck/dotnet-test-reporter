@@ -72,7 +72,7 @@ const formatCoverageModule = (module: ICoverageModule): string => {
       `${file.branchCoverage}%`,
       `${file.complexity}`,
       `${file.changedLinesCovered} / ${file.changedLinesTotal}`,
-      `${file.changedLineCoverage}`,
+      `${file.changedLineCoverage}%`,
       formatLinesToCover(file.linesToCover)
     ])
   );
