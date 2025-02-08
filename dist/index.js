@@ -250,7 +250,7 @@ const formatChangedFileCoverageMarkdown = (files) => {
     table += '|----------|--------------------------------------|-----------------------|\n';
     for (let file of files) {
         const { name, changedLineCoverage, changedLinesTotal, changedLinesCovered } = file;
-        table += `| ${name} | ${changedLinesCovered} / ${changedLinesTotal} | ${changedLineCoverage} |`;
+        table += `| ${name} | ${changedLinesCovered} / ${changedLinesTotal} | ${changedLineCoverage}% |\n`;
     }
     return `${table}`;
 };
