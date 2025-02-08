@@ -49,7 +49,8 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
 
         if (file) {
           const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
-          const changedLines = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
+          console.log(JSON.stringify(changedFile));
+          const changedLines = lines.filter(l => coverableLines.includes(Number(l['$'].number)));
           file.linesTotal += Number(summary.numSequencePoints);
           file.linesCovered += Number(summary.visitedSequencePoints);
           file.branchesTotal += Number(summary.numBranchPoints);
