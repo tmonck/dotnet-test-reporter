@@ -29,6 +29,7 @@ const parseSummary = (file: any, modules: ICoverageModule[]): ICoverageData => {
 };
 
 const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: ChangedFileWithLineNumbers[]): ICoverageModule[] => {
+  console.log("Hey");
   const modules = (file.coverage.packages[0].package ?? []) as any[];
 
   return modules.map(module => {
@@ -49,6 +50,7 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
         const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
         console.log(changedFile);
         const changedLines = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
+        console.log("HI");
         file.linesTotal += Number(lines.length);
         file.linesCovered += Number(lines.filter(l => Number(l['$'].hits) > 0).length);
         file.branchesTotal += branchData.reduce((summ, branch) => summ + Number(branch[1]), 0);
@@ -57,6 +59,7 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
           lines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number))
         );
         const unCoveredChangedLines = changedLines?.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number)) || [];
+        console.log("HI2");
         file.changedLinesTotal = changedLines.length;
         file.changedLinesCovered = changedLines.length - unCoveredChangedLines.length;
         file.changedLineCoverage = calculateCoverage(file.changedLinesCovered, changedLines.length);
