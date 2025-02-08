@@ -95,3 +95,7 @@ with:
   coverage-path: ./TestResults/coverage.xml
   coverage-threshold: 80
 ```
+
+coverage diff.
+Can you we determine exclude files
+can you set coverage % for diff and a min line limit (eg: 1 line shouldn't fail if it's not covered);

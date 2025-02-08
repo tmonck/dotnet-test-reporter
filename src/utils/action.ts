@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { CoverageType, IActionInputs, ICoverage, IResult } from '../data';
+import { ChangedFileWithLineNumbers, CoverageType, IActionInputs, ICoverage, IResult } from '../data';
 
 const inputs = {
   token: 'github-token',
@@ -9,7 +9,8 @@ const inputs = {
   resultsPath: 'results-path',
   coveragePath: 'coverage-path',
   coverageType: 'coverage-type',
-  coverageThreshold: 'coverage-threshold'
+  coverageThreshold: 'coverage-threshold',
+  changedFilesAndLineNumbers: 'changed-files-and-line-numbers'
 };
 
 const outputs = {
@@ -36,7 +37,8 @@ export const getInputs = (): IActionInputs => {
     resultsPath: core.getInput(inputs.resultsPath),
     coveragePath: core.getInput(inputs.coveragePath),
     coverageType: core.getInput(inputs.coverageType) as CoverageType,
-    coverageThreshold: Number(core.getInput(inputs.coverageThreshold))
+    coverageThreshold: Number(core.getInput(inputs.coverageThreshold)),
+    changedFilesAndLineNumbers: JSON.parse(core.getInput(inputs.changedFilesAndLineNumbers)) as ChangedFileWithLineNumbers[]
   };
 };
 

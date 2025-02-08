@@ -1,5 +1,10 @@
 import CoverageType from './CoverageType';
 
+export type ChangedFileWithLineNumbers = {
+  name: string;
+  lineNumbers: number[];
+};
+
 export default interface IActionInputs {
   token: string;
   title: string;
@@ -9,4 +14,5 @@ export default interface IActionInputs {
   coverageThreshold: number;
   postNewComment: boolean;
   allowFailedTests: boolean;
+  changedFilesAndLineNumbers: ChangedFileWithLineNumbers[]
 }

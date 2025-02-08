@@ -1,18 +1,24 @@
-import { CoverageParser, ICoverageData, ICoverageModule } from '../data';
+import { CoverageParser, ICoverageData, ICoverageFile, ICoverageModule, ChangedFileWithLineNumbers } from '../data';
 import { calculateCoverage, createCoverageModule, parseCoverage } from './common';
 
-const parseCobertura: CoverageParser = async (filePath: string, threshold: number) =>
-  parseCoverage(filePath, threshold, parseSummary, parseModules);
+const parseCobertura: CoverageParser = async (filePath: string, threshold: number, changedFilesAndLineNumbers: ChangedFileWithLineNumbers[]) =>
+  parseCoverage(filePath, threshold, changedFilesAndLineNumbers, parseSummary, parseModules);
 
-const parseSummary = (file: any): ICoverageData => {
+const parseSummary = (file: any, modules: ICoverageModule[]): ICoverageData => {
   const summary = file.coverage['$'];
   const totalCoverage = calculateCoverage(
     Number(summary['lines-covered']) + Number(summary['branches-covered']),
     Number(summary['lines-valid']) + Number(summary['branches-valid'])
   );
 
+  const changedLinesTotal = Number(modules.reduce((summ, m) => summ + Number(m.files.reduce((summ2, f) => summ2 + Number(f.changedLinesTotal), 0)), 0))
+  const changedLinesCovered = Number(modules.reduce((summ, m) => summ + Number(m.files.reduce((summ2, f) => summ2 + Number(f.changedLinesCovered), 0)), 0))
+
   return {
     totalCoverage,
+    changedLinesTotal,
+    changedLinesCovered,
+    changedLineCoverage: calculateCoverage(changedLinesCovered, changedLinesTotal),
     linesTotal: Number(summary['lines-valid']),
     linesCovered: Number(summary['lines-covered']),
     lineCoverage: calculateCoverage(summary['lines-covered'], summary['lines-valid']),
@@ -22,7 +28,7 @@ const parseSummary = (file: any): ICoverageData => {
   };
 };
 
-const parseModules = (file: any, threshold: number): ICoverageModule[] => {
+const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: ChangedFileWithLineNumbers[]): ICoverageModule[] => {
   const modules = (file.coverage.packages[0].package ?? []) as any[];
 
   return modules.map(module => {
@@ -38,7 +44,9 @@ const parseModules = (file: any, threshold: number): ICoverageModule[] => {
         .filter(l => l['$']['condition-coverage'])
         .map(l => branchRegex.exec(String(l['$']['condition-coverage']))?.[1].split('/') ?? []);
 
+      const coverableLines = lines.map(line => Number(line['$'].number));
       if (file) {
+        const changedLines = changedFilesAndLineNumbers[file.name].filter(ln => coverableLines.includes(Number(ln)));
         file.linesTotal += Number(lines.length);
         file.linesCovered += Number(lines.filter(l => Number(l['$'].hits) > 0).length);
         file.branchesTotal += branchData.reduce((summ, branch) => summ + Number(branch[1]), 0);
@@ -46,6 +54,10 @@ const parseModules = (file: any, threshold: number): ICoverageModule[] => {
         file.linesToCover = file.linesToCover.concat(
           lines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number))
         );
+        const unCoveredChangedLines = changedLines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number));
+        file.changedLinesTotal = changedLines.length;
+        file.changedLinesCovered = changedLines.length - unCoveredChangedLines.length;
+        file.changedLineCoverage = calculateCoverage(file.changedLinesCovered, changedLines.length);
       }
     });
 
@@ -59,6 +71,9 @@ const parseFiles = (classes: any[]) => {
   return fileNames.map(file => ({
     name: file,
     totalCoverage: 0,
+    changedLinesTotal: 0,
+    changedLinesCovered: 0,
+    changedLineCoverage: 0,
     linesTotal: 0,
     linesCovered: 0,
     lineCoverage: 0,
@@ -66,7 +81,7 @@ const parseFiles = (classes: any[]) => {
     branchesCovered: 0,
     branchCoverage: 0,
     linesToCover: Array<number>()
-  }));
+  } as ICoverageFile));
 };
 
 export default parseCobertura;
