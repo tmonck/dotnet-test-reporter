@@ -45,19 +45,12 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
         const summary = m.Summary[0]['$'];
         const lines = (m.SequencePoints[0].SequencePoint ?? []) as any[];
         const coverableLines = lines.map(line => Number(line['$'].sl));
-        console.log(JSON.stringify(coverableLines));
         complexity = complexity + Number(summary.maxCyclomaticComplexity);
 
         if (file) {
           const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
           const changedLineNumbers = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
           const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].sl)));
-          if (changedLines.length > 0) {
-            console.log(file.name);
-            console.log(changedFile?.name);
-            console.log(JSON.stringify(changedLineNumbers));
-            console.log(JSON.stringify(changedLines));
-          }
           file.linesTotal += Number(summary.numSequencePoints);
           file.linesCovered += Number(summary.visitedSequencePoints);
           file.branchesTotal += Number(summary.numBranchPoints);
@@ -70,6 +63,15 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
           file.changedLinesCovered = changedLines.length - unCoveredChangedLines.length;
           file.changedLineCoverage = calculateCoverage(file.changedLinesCovered, changedLines.length);
           file.complexity = complexity;
+          if (changedLines.length > 0) {
+            console.log(file.name);
+            console.log(changedFile?.name);
+            console.log(JSON.stringify(changedLineNumbers));
+            console.log(JSON.stringify(changedLines));
+            console.log(unCoveredChangedLines);
+            console.log(file.changedLinesTotal);
+            console.log(file.changedLinesCovered);
+          }
         }
       });
       moduleComplexity = complexity + moduleComplexity;
