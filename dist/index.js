@@ -126,13 +126,16 @@ const formatCoverageModule = (module) => {
         { name: 'Line', align: 'center' },
         { name: 'Branch', align: 'center' },
         { name: 'Complexity', align: 'center' },
+        { name: 'Changed Total', align: 'center' },
+        { name: 'Changed', align: 'center' },
         { name: 'Lines to Cover' }
     ], module.files.map(file => [
         file.name,
         `${file.linesCovered} / ${file.linesTotal}`,
         `${file.lineCoverage}%`,
         `${file.branchCoverage}%`,
-        `${file.complexity}`,
+        `${file.changedLineCoverage} / ${file.changedLinesTotal}`,
+        `${file.changedLineCoverage}`,
         formatLinesToCover(file.linesToCover)
     ]));
     return formatDetails(summary, table);
