@@ -47,8 +47,6 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
 
       const coverableLines = lines.map(line => Number(line['$'].number));
       if (file) {
-        console.log(file.name);
-        console.log(JSON.stringify(changedFilesAndLineNumbers[0].name));
         const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
         const changedLines = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
         file.linesTotal += Number(lines.length);

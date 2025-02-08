@@ -349,8 +349,6 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 .map(l => { var _a, _b; return (_b = (_a = branchRegex.exec(String(l['$']['condition-coverage']))) === null || _a === void 0 ? void 0 : _a[1].split('/')) !== null && _b !== void 0 ? _b : []; });
             const coverableLines = lines.map(line => Number(line['$'].number));
             if (file) {
-                console.log(file.name);
-                console.log(JSON.stringify(changedFilesAndLineNumbers[0].name));
                 const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
                 const changedLines = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                 file.linesTotal += Number(lines.length);
@@ -494,7 +492,6 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 const coverableLines = lines.map(line => Number(line['$'].number));
                 complexity = complexity + Number(summary.maxCyclomaticComplexity);
                 if (file) {
-                    console.log(file.name);
                     const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
                     const changedLines = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                     file.linesTotal += Number(summary.numSequencePoints);
