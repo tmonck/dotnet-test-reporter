@@ -249,8 +249,10 @@ const formatChangedFileCoverageMarkdown = (files) => {
     let table = '| Filename | Covered Changed Lines / Lines Changed| Changed Line Coverage |\n';
     table += '|----------|--------------------------------------|-----------------------|\n';
     for (let file of files) {
-        const { name, changedLineCoverage, changedLinesTotal, changedLinesCovered } = file;
-        table += `| ${name} | ${changedLinesCovered} / ${changedLinesTotal} | ${changedLineCoverage}% |\n`;
+        // const { name, changedLineCoverage, changedLinesTotal, changedLinesCovered } = file;
+        // table += `| ${name} | ${changedLinesCovered} / ${changedLinesTotal} | ${changedLineCoverage}% |\n`
+        const { name, changedLineCoverage, changedLinesTotal, changedLinesCovered, linesCovered, linesTotal } = file;
+        table += `| ${name} | ${linesCovered} / ${linesTotal} | ${changedLinesCovered} / ${changedLinesTotal} (${changedLineCoverage}&) |\n`;
     }
     return `${table}\n`;
 };
