@@ -46,10 +46,11 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
         .map(l => branchRegex.exec(String(l['$']['condition-coverage']))?.[1].split('/') ?? []);
 
       const coverableLines = lines.map(line => Number(line['$'].number));
+
       if (file) {
         const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
-        console.log(JSON.stringify(changedFile));
-        const changedLines = lines.filter(l => coverableLines.includes(Number(l['$'].number)));
+        const changedLineNumbers = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
+        const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].number)));
         console.log(JSON.stringify(changedLines));
         file.linesTotal += Number(lines.length);
         file.linesCovered += Number(lines.filter(l => Number(l['$'].hits) > 0).length);
@@ -58,9 +59,7 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
         file.linesToCover = file.linesToCover.concat(
           lines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number))
         );
-        console.log('We had hits once');
         const unCoveredChangedLines = changedLines?.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number)) || [];
-        console.log('We had hits twice');
         file.changedLinesTotal = changedLines.length;
         file.changedLinesCovered = changedLines.length - unCoveredChangedLines.length;
         file.changedLineCoverage = calculateCoverage(file.changedLinesCovered, changedLines.length);
