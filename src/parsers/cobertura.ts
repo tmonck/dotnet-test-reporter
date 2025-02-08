@@ -46,7 +46,8 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
 
       const coverableLines = lines.map(line => Number(line['$'].number));
       if (file) {
-        const changedLines = changedFilesAndLineNumbers[file.name].filter(ln => coverableLines.includes(Number(ln)));
+        const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
+        const changedLines = changedFile?.lineNumbers?.filter(ln => coverableLines.includes(Number(ln))) || [];
         file.linesTotal += Number(lines.length);
         file.linesCovered += Number(lines.filter(l => Number(l['$'].hits) > 0).length);
         file.branchesTotal += branchData.reduce((summ, branch) => summ + Number(branch[1]), 0);
@@ -54,7 +55,7 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
         file.linesToCover = file.linesToCover.concat(
           lines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number))
         );
-        const unCoveredChangedLines = changedLines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number));
+        const unCoveredChangedLines = changedLines?.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number)) || [];
         file.changedLinesTotal = changedLines.length;
         file.changedLinesCovered = changedLines.length - unCoveredChangedLines.length;
         file.changedLineCoverage = calculateCoverage(file.changedLinesCovered, changedLines.length);
