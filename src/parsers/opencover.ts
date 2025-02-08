@@ -52,7 +52,7 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
           const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
           const changedLineNumbers = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
           const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].sl)));
-          if (changedLineNumbers.length > 0) {
+          if (changedLines.length > 0) {
             console.log(file.name);
             console.log(changedFile?.name);
             console.log(JSON.stringify(changedLineNumbers));
