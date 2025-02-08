@@ -10,7 +10,9 @@ const inputs = {
   coveragePath: 'coverage-path',
   coverageType: 'coverage-type',
   coverageThreshold: 'coverage-threshold',
-  changedFilesAndLineNumbers: 'changed-files-and-line-numbers'
+  changedFilesAndLineNumbers: 'changed-files-and-line-numbers',
+  showFailedTestsOnly: 'show-failed-tests-only',
+  showTestOutput: 'show-test-output'
 };
 
 const outputs = {
@@ -38,7 +40,9 @@ export const getInputs = (): IActionInputs => {
     coveragePath: core.getInput(inputs.coveragePath),
     coverageType: core.getInput(inputs.coverageType) as CoverageType,
     coverageThreshold: Number(core.getInput(inputs.coverageThreshold)),
-    changedFilesAndLineNumbers: JSON.parse(core.getInput(inputs.changedFilesAndLineNumbers)) as ChangedFileWithLineNumbers[]
+    changedFilesAndLineNumbers: JSON.parse(core.getInput(inputs.changedFilesAndLineNumbers)) as ChangedFileWithLineNumbers[],
+    showFailedTestsOnly: core.getBooleanInput(inputs.showFailedTestsOnly),
+    showTestOutput: core.getBooleanInput(inputs.showTestOutput)
   };
 };
 

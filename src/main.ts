@@ -15,7 +15,9 @@ const run = async (): Promise<void> => {
       coverageThreshold,
       postNewComment,
       allowFailedTests,
-      changedFilesAndLineNumbers
+      changedFilesAndLineNumbers,
+      showFailedTestsOnly,
+      showTestOutput
     } = getInputs();
 
     let comment = '';
@@ -23,7 +25,7 @@ const run = async (): Promise<void> => {
 
     const testResult = await processTestResults(resultsPath, allowFailedTests);
     comment += formatResultMarkdown(testResult);
-    summary += formatResultHtml(testResult);
+    summary += formatResultHtml(testResult, showFailedTestsOnly, showTestOutput);
 
     if (coveragePath) {
       const testCoverage = await processTestCoverage(coveragePath, coverageType, coverageThreshold, changedFilesAndLineNumbers);

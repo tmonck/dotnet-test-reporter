@@ -14,42 +14,63 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: |
-          npm ci
-      - run: |
-          npm run build
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run build
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Test Results Success
+      - uses: actions/checkout@v4
+      - name: Test - Results All
         uses: ./
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-title: Test Results Success
-          results-path: ./files/success/
-      - name: Test Results Fail
-        uses: ./
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-title: Test Results Fail
-          results-path: ./files/fail/
+          comment-title: Test - Results All
+          results-path: ./files/**/*.trx
           allow-failed-tests: true
-      - name: Test Coverage OpenCover
+      - name: Test - Results Success
         uses: ./
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-title: Test Coverage OpenCover
-          results-path: ./files/success/
+          comment-title: Test - Results Success
+          results-path: ./files/success/*
+      - name: Test - Results Fail
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-title: Test - Results Fail
+          results-path: ./files/fail/*
+          allow-failed-tests: true
+      - name: Test - Coverage OpenCover
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-title: Test - Coverage OpenCover
+          results-path: ./files/success/*
           coverage-path: ./files/success/test_coverage_opencover.xml
           coverage-threshold: 44
-      - name: Test Coverage Cobertura
+      - name: Test - Coverage Cobertura
         uses: ./
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          comment-title: Test Coverage Cobertura
-          results-path: ./files/success
+          comment-title: Test - Coverage Cobertura
+          results-path: ./files/success/*
           coverage-path: ./files/success/test_coverage_cobertura.xml
           coverage-type: cobertura
           coverage-threshold: 44
+      - name: Test - Show Failed Tests Only
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-title: Test - Hide Success
+          results-path: ./files/**/*.trx
+          allow-failed-tests: true
+          show-failed-tests-only: true
+      - name: Test - Hide Test Output
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-title: Test - Hide Output
+          results-path: ./files/**/test_result.trx
+          allow-failed-tests: true
+          show-test-output: false

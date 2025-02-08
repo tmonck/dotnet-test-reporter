@@ -1,4 +1,4 @@
-import { ResultParser, ITestSuit, TestOutcome } from '../data';
+import { ITestSuit, ResultParser, TestOutcome } from '../data';
 import { readXmlFile } from '../utils';
 
 const parseTrx: ResultParser = async (filePath: string) => {
@@ -41,7 +41,7 @@ const parseSummary = (file: any) => {
 };
 
 const parseResults = (file: any) => {
-  const results = file.TestRun.Results[0].UnitTestResult as any[];
+  const results = (file.TestRun?.Results?.[0]?.UnitTestResult ?? []) as any[];
 
   return results.map((result: any) => ({
     executionId: String(result['$'].executionId),
@@ -62,7 +62,7 @@ const parseResults = (file: any) => {
 };
 
 const parseDefinitions = (file: any) => {
-  const definitions = file.TestRun.TestDefinitions[0].UnitTest as any[];
+  const definitions = (file.TestRun?.TestDefinitions?.[0]?.UnitTest ?? []) as any[];
 
   return definitions.map(definition => ({
     id: String(definition['$'].id),

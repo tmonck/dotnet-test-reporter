@@ -14,5 +14,7 @@ export default interface IActionInputs {
   coverageThreshold: number;
   postNewComment: boolean;
   allowFailedTests: boolean;
-  changedFilesAndLineNumbers: ChangedFileWithLineNumbers[]
+  changedFilesAndLineNumbers: ChangedFileWithLineNumbers[];
+  showFailedTestsOnly: boolean;
+  showTestOutput: boolean;
 }

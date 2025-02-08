@@ -1,5 +1,6 @@
 import { ICoverage, ICoverageModule, IResult, ITest, ITestSuit, TestOutcome } from '../data';
 import { formatElapsedTime, getSectionLink, getStatusIcon } from './common';
+import { sort } from 'fast-sort';
 
 interface Element {
   tag: string;
@@ -20,7 +21,7 @@ const outcomeIcons: { [key in TestOutcome]: string } = {
 export const formatTitleHtml = (title: string): string =>
   wrap(title, { tag: 'h1', attributes: { id: getSectionLink(title) } });
 
-export const formatResultHtml = (result: IResult): string => {
+export const formatResultHtml = (result: IResult, showFailedTestsOnly: boolean, showTestOutput: boolean): string => {
   let html = wrap('Tests', 'h3');
 
   html += formatTable(
@@ -28,7 +29,12 @@ export const formatResultHtml = (result: IResult): string => {
     [[`${result.passed}`, `${result.failed}`, `${result.skipped}`, formatElapsedTime(result.elapsed)]]
   );
 
-  html += result.suits.map(formatTestSuit).join('');
+  const sortedSuits = sort(result.suits).asc([
+    s => (s.tests.filter(t => t.outcome === 'Failed').length > 0 ? 0 : 1),
+    s => s.name
+  ]);
+
+  html += sortedSuits.map(suit => formatTestSuit(suit, showFailedTestsOnly, showTestOutput)).join('');
 
   return html;
 };
@@ -46,7 +52,7 @@ export const formatCoverageHtml = (coverage: ICoverage): string => {
 
 const formatCoverageModule = (module: ICoverageModule): string => {
   const icon = getStatusIcon(module.success);
-  const summary = `${icon} ${module.name} - ${module.coverage}%`;
+  const summary = `${icon} ${module.name} (${module.complexity}) - ${module.coverage}%`;
 
   const table = formatTable(
     [
@@ -54,6 +60,7 @@ const formatCoverageModule = (module: ICoverageModule): string => {
       { name: 'Total', align: 'center' },
       { name: 'Line', align: 'center' },
       { name: 'Branch', align: 'center' },
+      { name: 'Complexity', align: 'center' },
       { name: 'Lines to Cover' }
     ],
     module.files.map(file => [
@@ -61,6 +68,7 @@ const formatCoverageModule = (module: ICoverageModule): string => {
       `${file.linesCovered} / ${file.linesTotal}`,
       `${file.lineCoverage}%`,
       `${file.branchCoverage}%`,
+      `${file.complexity}`,
       formatLinesToCover(file.linesToCover)
     ])
   );
@@ -82,21 +90,27 @@ const formatLinesToCover = (linesToCover: number[]): string => {
     .join(', ');
 };
 
-const formatTestSuit = (suit: ITestSuit): string => {
+const formatTestSuit = (suit: ITestSuit, showFailedTestsOnly: boolean, showTestOutput: boolean): string => {
   const icon = getStatusIcon(suit.success);
   const summary = `${icon} ${suit.name} - ${suit.passed}/${suit.tests.length}`;
-  const hasOutput = suit.tests.some(test => test.output || test.error);
+  const sortedTests = sort(suit.tests).asc([test => test.outcome]);
+  const filteredTests = sortedTests.filter(test => !showFailedTestsOnly || test.outcome === 'Failed');
+  const showOutput = filteredTests.some(test => (test.output && showTestOutput) || test.error);
 
   const table = formatTable(
-    [{ name: 'Result', align: 'center' }, { name: 'Test' }, ...(hasOutput ? [{ name: 'Output' }] : [])],
-    suit.tests.map(test => [outcomeIcons[test.outcome], test.name, ...(hasOutput ? [formatTestOutput(test)] : [])])
+    [{ name: 'Result', align: 'center' }, { name: 'Test' }, ...(showOutput ? [{ name: 'Output' }] : [])],
+    filteredTests.map(test => [
+      outcomeIcons[test.outcome],
+      test.name,
+      ...(showOutput ? [formatTestOutput(test, showTestOutput)] : [])
+    ])
   );
 
-  return formatDetails(summary, table);
+  return formatDetails(summary, filteredTests.length ? table : '');
 };
 
-const formatTestOutput = (test: ITest): string => {
-  let output = test.output;
+const formatTestOutput = (test: ITest, showTestOutput: boolean): string => {
+  let output = showTestOutput ? test.output : '';
 
   if (test.error) {
     output += `${output ? '<br/><br/>' : ''}<b>Error Message</b><br/>${test.error}`;

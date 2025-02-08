@@ -34,15 +34,18 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
     const name = String(module.ModuleName[0]);
     const files = parseFiles(name, module);
     const classes = (module.Classes[0].Class ?? []) as any[];
+    let moduleComplexity = Number(0);
 
     classes.forEach(c => {
       const methods = (c.Methods[0].Method ?? []) as any[];
+      let complexity = Number(0);
 
       methods.forEach(m => {
         const file = files.find(f => f.id === m.FileRef[0]['$'].uid);
         const summary = m.Summary[0]['$'];
         const lines = (m.SequencePoints[0].SequencePoint ?? []) as any[];
         const coverableLines = lines.map(line => Number(line['$'].number));
+        complexity = complexity + Number(summary.maxCyclomaticComplexity);
 
         if (file) {
           const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
@@ -58,11 +61,12 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
           file.changedLinesTotal = changedLines.length || 0;
           file.changedLinesCovered = changedLines.length - unCoveredChangedLines.length;
           file.changedLineCoverage = calculateCoverage(file.changedLinesCovered, changedLines.length);
+          file.complexity = complexity;
         }
       });
+      moduleComplexity = complexity + moduleComplexity;
     });
-
-    return createCoverageModule(name, threshold, files);
+    return createCoverageModule(name, threshold, files, moduleComplexity);
   });
 };
 
@@ -82,7 +86,8 @@ const parseFiles = (moduleName: string, module: any) => {
     branchesTotal: 0,
     branchesCovered: 0,
     branchCoverage: 0,
-    linesToCover: Array<number>()
+    linesToCover: Array<number>(),
+    complexity: 0
   } as ICoverageFile));
 };
 
