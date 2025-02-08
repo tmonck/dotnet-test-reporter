@@ -50,7 +50,7 @@ jobs:
           results-path: ./files/success/*
           coverage-path: ./files/success/test_coverage_opencover.xml
           coverage-threshold: 44
-          changed-files-and-line-numbers: '[{"name": "Specifications\BaseSpecification.cs", "lineNumbers": [17,18,19]}]'
+          changed-files-and-line-numbers: '[{"name": "Specifications\\BaseSpecification.cs", "lineNumbers": [17,18,19]}]'
       - name: Test - Coverage Cobertura
         uses: ./
         with:
