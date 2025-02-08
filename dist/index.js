@@ -134,7 +134,8 @@ const formatCoverageModule = (module) => {
         `${file.linesCovered} / ${file.linesTotal}`,
         `${file.lineCoverage}%`,
         `${file.branchCoverage}%`,
-        `${file.changedLineCoverage} / ${file.changedLinesTotal}`,
+        `${file.complexity}`,
+        `${file.changedLinesCovered} / ${file.changedLinesTotal}`,
         `${file.changedLineCoverage}`,
         formatLinesToCover(file.linesToCover)
     ]));
