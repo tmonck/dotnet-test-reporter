@@ -308,6 +308,7 @@ const parseSummary = (file, modules) => {
 };
 const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
     var _a;
+    console.log("Hey");
     const modules = ((_a = file.coverage.packages[0].package) !== null && _a !== void 0 ? _a : []);
     return modules.map(module => {
         var _a;
@@ -324,13 +325,17 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 .map(l => { var _a, _b; return (_b = (_a = branchRegex.exec(String(l['$']['condition-coverage']))) === null || _a === void 0 ? void 0 : _a[1].split('/')) !== null && _b !== void 0 ? _b : []; });
             const coverableLines = lines.map(line => Number(line['$'].number));
             if (file) {
-                const changedLines = changedFilesAndLineNumbers[file.name].filter(ln => coverableLines.includes(Number(ln)));
+                const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
+                console.log(changedFile);
+                const changedLines = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
+                console.log("HI");
                 file.linesTotal += Number(lines.length);
                 file.linesCovered += Number(lines.filter(l => Number(l['$'].hits) > 0).length);
                 file.branchesTotal += branchData.reduce((summ, branch) => summ + Number(branch[1]), 0);
                 file.branchesCovered += branchData.reduce((summ, branch) => summ + Number(branch[0]), 0);
                 file.linesToCover = file.linesToCover.concat(lines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number)));
-                const unCoveredChangedLines = changedLines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number));
+                const unCoveredChangedLines = (changedLines === null || changedLines === void 0 ? void 0 : changedLines.filter(line => !Number(line['$'].hits)).map(line => Number(line['$'].number))) || [];
+                console.log("HI2");
                 file.changedLinesTotal = changedLines.length;
                 file.changedLinesCovered = changedLines.length - unCoveredChangedLines.length;
                 file.changedLineCoverage = (0, common_1.calculateCoverage)(file.changedLinesCovered, changedLines.length);
