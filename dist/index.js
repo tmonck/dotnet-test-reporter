@@ -352,7 +352,6 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
                 const changedLineNumbers = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                 const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].number)));
-                console.log(JSON.stringify(changedLines));
                 file.linesTotal += Number(lines.length);
                 file.linesCovered += Number(lines.filter(l => Number(l['$'].hits) > 0).length);
                 file.branchesTotal += branchData.reduce((summ, branch) => summ + Number(branch[1]), 0);
@@ -491,12 +490,14 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 const file = files.find(f => f.id === m.FileRef[0]['$'].uid);
                 const summary = m.Summary[0]['$'];
                 const lines = ((_a = m.SequencePoints[0].SequencePoint) !== null && _a !== void 0 ? _a : []);
+                console.log(JSON.stringify(lines));
                 const coverableLines = lines.map(line => Number(line['$'].sl));
                 complexity = complexity + Number(summary.maxCyclomaticComplexity);
                 if (file) {
                     const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
                     const changedLineNumbers = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                     const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].sl)));
+                    console.log(JSON.stringify(changedLines));
                     file.linesTotal += Number(summary.numSequencePoints);
                     file.linesCovered += Number(summary.visitedSequencePoints);
                     file.branchesTotal += Number(summary.numBranchPoints);
