@@ -215,7 +215,7 @@ const formatTable = (headers, rows) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.formatCoverageMarkdown = exports.formatResultMarkdown = exports.formatSummaryLinkMarkdown = exports.formatFooterMarkdown = exports.formatHeaderMarkdown = void 0;
+exports.formatChangedFileCoverageMarkdown = exports.formatCoverageMarkdown = exports.formatResultMarkdown = exports.formatSummaryLinkMarkdown = exports.formatFooterMarkdown = exports.formatHeaderMarkdown = void 0;
 const common_1 = __nccwpck_require__(9759);
 const formatHeaderMarkdown = (header) => `## ${header}\n`;
 exports.formatHeaderMarkdown = formatHeaderMarkdown;
@@ -245,6 +245,16 @@ const formatCoverageMarkdown = (coverage, min) => {
     return `${title} ${info} ${status}\n${lines} ${branches}\n`;
 };
 exports.formatCoverageMarkdown = formatCoverageMarkdown;
+const formatChangedFileCoverageMarkdown = (files) => {
+    let table = '| Filename | Covered Changed Lines / Lines Changed| Changed Line Coverage |\n';
+    table += '|----------|--------------------------------------|-----------------------|\n';
+    for (let file of files) {
+        const { name, changedLineCoverage, changedLinesTotal, changedLinesCovered } = file;
+        table += `| ${name} | ${changedLinesCovered} / ${changedLinesTotal} | ${changedLineCoverage} |`;
+    }
+    return `${table}`;
+};
+exports.formatChangedFileCoverageMarkdown = formatChangedFileCoverageMarkdown;
 const getStatusText = (success) => (success ? '**passed**' : '**failed**');
 
 
@@ -282,6 +292,13 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             const testCoverage = yield (0, coverage_1.processTestCoverage)(coveragePath, coverageType, coverageThreshold, changedFilesAndLineNumbers);
             comment += testCoverage ? (0, markdown_1.formatCoverageMarkdown)(testCoverage, coverageThreshold) : '';
             summary += testCoverage ? (0, html_1.formatCoverageHtml)(testCoverage) : '';
+            if (testCoverage) {
+                for (let myMod of testCoverage.modules) {
+                    const changedFiles = myMod.files.filter(f => f.changedLinesTotal > 0);
+                    const tempComment = (0, markdown_1.formatChangedFileCoverageMarkdown)(changedFiles);
+                    yield (0, utils_1.publishComment)(token, `${myMod.name}'s Changed File Coverage`, tempComment, postNewComment);
+                }
+            }
         }
         yield (0, utils_1.setSummary)(summary);
         yield (0, utils_1.publishComment)(token, title, comment, postNewComment);

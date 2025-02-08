@@ -1,4 +1,4 @@
-import { ICoverage, IResult } from '../data';
+import { ICoverage, ICoverageFile, IResult } from '../data';
 import { formatElapsedTime, getSectionLink, getStatusIcon } from './common';
 
 export const formatHeaderMarkdown = (header: string): string => `## ${header}\n`;
@@ -34,5 +34,15 @@ export const formatCoverageMarkdown = (coverage: ICoverage, min: number): string
 
   return `${title} ${info} ${status}\n${lines} ${branches}\n`;
 };
+
+export const formatChangedFileCoverageMarkdown = (files: ICoverageFile[]): string => {
+  let table = '| Filename | Covered Changed Lines / Lines Changed| Changed Line Coverage |\n'
+  table += '|----------|--------------------------------------|-----------------------|\n'
+  for (let file of files ) {
+    const { name, changedLineCoverage, changedLinesTotal, changedLinesCovered } = file;
+    table += `| ${name} | ${changedLinesCovered} / ${changedLinesTotal} | ${changedLineCoverage} |`
+  }
+  return `${table}`;
+}
 
 const getStatusText = (success: boolean) => (success ? '**passed**' : '**failed**');
