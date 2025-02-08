@@ -332,7 +332,6 @@ const parseSummary = (file, modules) => {
 };
 const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
     var _a;
-    console.log("Hey");
     const modules = ((_a = file.coverage.packages[0].package) !== null && _a !== void 0 ? _a : []);
     return modules.map(module => {
         var _a;
@@ -350,6 +349,7 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 .map(l => { var _a, _b; return (_b = (_a = branchRegex.exec(String(l['$']['condition-coverage']))) === null || _a === void 0 ? void 0 : _a[1].split('/')) !== null && _b !== void 0 ? _b : []; });
             const coverableLines = lines.map(line => Number(line['$'].number));
             if (file) {
+                console.log(file.name);
                 const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
                 const changedLines = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                 file.linesTotal += Number(lines.length);
