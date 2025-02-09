@@ -351,12 +351,13 @@ const parseSummary = (file, modules) => {
 };
 const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
     var _a;
+    const fileFullDirPath = file.coverage.sources[0].source;
     const modules = ((_a = file.coverage.packages[0].package) !== null && _a !== void 0 ? _a : []);
     return modules.map(module => {
         var _a;
         const name = String(module['$'].name);
         const classes = ((_a = module.classes[0].class) !== null && _a !== void 0 ? _a : []);
-        const files = parseFiles(classes);
+        const files = parseFiles(classes, fileFullDirPath);
         const complexity = Number(module['$'].complexity);
         classes.forEach(c => {
             var _a;
@@ -368,7 +369,7 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 .map(l => { var _a, _b; return (_b = (_a = branchRegex.exec(String(l['$']['condition-coverage']))) === null || _a === void 0 ? void 0 : _a[1].split('/')) !== null && _b !== void 0 ? _b : []; });
             const coverableLines = lines.map(line => Number(line['$'].number));
             if (file) {
-                const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
+                const changedFile = changedFilesAndLineNumbers.find(f => (f.name === file.name) || (f.name === file.fullPath));
                 const changedLineNumbers = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                 const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].number)));
                 file.linesTotal += Number(lines.length);
@@ -386,10 +387,11 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
         return (0, common_1.createCoverageModule)(name, threshold, files, complexity);
     });
 };
-const parseFiles = (classes) => {
+const parseFiles = (classes, fileDirPath) => {
     const fileNames = [...new Set(classes.map(c => String(c['$'].filename)))];
     return fileNames.map(file => ({
         name: file,
+        fullPath: fileDirPath + file,
         totalCoverage: 0,
         changedLinesTotal: 0,
         changedLinesCovered: 0,
@@ -512,7 +514,7 @@ const parseModules = (file, threshold, changedFilesAndLineNumbers) => {
                 const coverableLines = lines.map(line => Number(line['$'].sl));
                 complexity = complexity + Number(summary.maxCyclomaticComplexity);
                 if (file) {
-                    const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
+                    const changedFile = changedFilesAndLineNumbers.find(f => (f.name === file.name) || (f.name === file.fullPath));
                     const changedLineNumbers = (changedFile === null || changedFile === void 0 ? void 0 : changedFile.lineNumbers.filter(ln => coverableLines.includes(Number(ln)))) || [];
                     const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].sl)));
                     file.linesTotal += Number(summary.numSequencePoints);
@@ -539,6 +541,7 @@ const parseFiles = (moduleName, module) => {
         var _a;
         return ({
             id: String(file['$'].uid),
+            fullPath: String(file['$'].fullPath),
             name: (_a = String(file['$'].fullPath).split(`${moduleName}\\`).slice(-1).pop()) !== null && _a !== void 0 ? _a : '',
             totalCoverage: 0,
             changedLinesTotal: 0,

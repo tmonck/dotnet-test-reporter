@@ -29,12 +29,13 @@ const parseSummary = (file: any, modules: ICoverageModule[]): ICoverageData => {
 };
 
 const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: ChangedFileWithLineNumbers[]): ICoverageModule[] => {
+  const fileFullDirPath = file.coverage.sources[0].source;
   const modules = (file.coverage.packages[0].package ?? []) as any[];
 
   return modules.map(module => {
     const name = String(module['$'].name);
     const classes = (module.classes[0].class ?? []) as any[];
-    const files = parseFiles(classes);
+    const files = parseFiles(classes, fileFullDirPath);
     const complexity = Number(module['$'].complexity)
 
     classes.forEach(c => {
@@ -48,7 +49,7 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
       const coverableLines = lines.map(line => Number(line['$'].number));
 
       if (file) {
-        const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
+        const changedFile = changedFilesAndLineNumbers.find(f => (f.name === file.name) || (f.name === file.fullPath));
         const changedLineNumbers = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
         const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].number)));
         file.linesTotal += Number(lines.length);
@@ -70,11 +71,12 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
   });
 };
 
-const parseFiles = (classes: any[]) => {
+const parseFiles = (classes: any[], fileDirPath: string) => {
   const fileNames = [...new Set(classes.map(c => String(c['$'].filename)))];
 
   return fileNames.map(file => ({
     name: file,
+    fullPath: fileDirPath + file,
     totalCoverage: 0,
     changedLinesTotal: 0,
     changedLinesCovered: 0,

@@ -48,7 +48,7 @@ const parseModules = (file: any, threshold: number, changedFilesAndLineNumbers: 
         complexity = complexity + Number(summary.maxCyclomaticComplexity);
 
         if (file) {
-          const changedFile = changedFilesAndLineNumbers.find(f => f.name === file.name);
+          const changedFile = changedFilesAndLineNumbers.find(f => (f.name === file.name) || (f.name === file.fullPath));
           const changedLineNumbers = changedFile?.lineNumbers.filter(ln => coverableLines.includes(Number(ln))) || [];
           const changedLines = lines.filter(l => changedLineNumbers.includes(Number(l['$'].sl)));
           file.linesTotal += Number(summary.numSequencePoints);
@@ -76,6 +76,7 @@ const parseFiles = (moduleName: string, module: any) => {
 
   return fileData.map(file => ({
     id: String(file['$'].uid),
+    fullPath: String(file['$'].fullPath),
     name: String(file['$'].fullPath).split(`${moduleName}\\`).slice(-1).pop() ?? '',
     totalCoverage: 0,
     changedLinesTotal: 0,
