@@ -36,8 +36,8 @@ export const formatCoverageMarkdown = (coverage: ICoverage, min: number): string
 };
 
 export const formatChangedFileCoverageMarkdown = (files: ICoverageFile[]): string => {
-  let table = '| Filename | Covered Changed Lines / Lines Changed| Changed Line Coverage |\n'
-  table += '|----------|--------------------------------------|-----------------------|\n'
+  let table = '| Filename | Lines Covered | Changed Lines Covered |\n'
+  table += '|----------|---------------|-----------------------|\n'
   for (let file of files ) {
     // const { name, changedLineCoverage, changedLinesTotal, changedLinesCovered } = file;
     // table += `| ${name} | ${changedLinesCovered} / ${changedLinesTotal} | ${changedLineCoverage}% |\n`
