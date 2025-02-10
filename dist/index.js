@@ -126,7 +126,7 @@ const formatCoverageModule = (module) => {
         { name: 'Line', align: 'center' },
         { name: 'Branch', align: 'center' },
         { name: 'Complexity', align: 'center' },
-        { name: 'Changed Lines Covered', align: 'center' },
+        { name: 'Changed Lines', align: 'center' },
         { name: 'Lines to Cover' }
     ], module.files.map(file => [
         file.name,
