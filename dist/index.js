@@ -135,7 +135,6 @@ const formatCoverageModule = (module) => {
         `${file.branchCoverage}%`,
         `${file.complexity}`,
         `${file.changedLinesCovered} / ${file.changedLinesTotal} (${file.changedLineCoverage}%)`,
-        `${file.changedLineCoverage}%`,
         formatLinesToCover(file.linesToCover)
     ]));
     return formatDetails(summary, table);
