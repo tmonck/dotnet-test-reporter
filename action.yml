@@ -22,7 +22,7 @@ inputs:
     description: 'Minimum allowed coverage (from 0.00 to 100.00)'
     required: false
   changed-files-and-line-numbers:
-    description: 'TBD'
+    description: 'Array of changed files and lines numbers'
     required: false
     default: '[]'
   comment-title:

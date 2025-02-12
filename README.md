@@ -64,6 +64,12 @@ Set to `false` or leave blank to show all the test results (recommended).
 Set to `true` or leave blank to show the output of the tests. (recommended).
 Set to `false` if there is too much output leading to truncation on the summary
 <br/>Default: `true`
+
+#### `change-files-and-line-numbers`
+**Optional** - Array of changed files and lines numbers. 
+<br/>Examples: `[{"name":"Specifications\\BaseSpecification.cs","lineNumbers":[17,18,19]}]`
+<br/>Default: `[]`
+
 ## Outputs
 
 #### `tests-total`
@@ -108,7 +114,3 @@ with:
   coverage-path: ./TestResults/coverage.xml
   coverage-threshold: 80
 ```
-
-coverage diff.
-Can you we determine exclude files
-can you set coverage % for diff and a min line limit (eg: 1 line shouldn't fail if it's not covered);
